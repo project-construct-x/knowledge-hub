@@ -2,7 +2,8 @@ from fastapi import FastAPI, Request, APIRouter
 from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import useCases, subUseCases, roles, transactions, properties, propertyGroups, users, ontology, standards
+from starlette.middleware.sessions import SessionMiddleware
+from .routers import auth, useCases, subUseCases, roles, transactions, properties, propertyGroups, users, ontology, standards
 from .config import IMAGE_DIR, get_settings
 from .exceptions import VersionConflictError
 
@@ -13,6 +14,11 @@ app = FastAPI(
     description="Manage use cases and related information.",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
+    swagger_ui_init_oauth={
+        "clientId": "usecase-management-dev-swagger",
+        "usePkceWithAuthorizationCodeGrant": True,
+        "scopes": "openid profile email",
+    },
 )
 
 @app.exception_handler(VersionConflictError)
@@ -36,6 +42,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=get_settings().session_secret_key,
+)
+
 api = APIRouter(prefix="/api")
 
 @app.get("/health")
@@ -44,9 +55,8 @@ def health() -> Response:
 
 app.mount("/static/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
-api.include_router(users.auth_router)
+api.include_router(auth.auth_router)
 api.include_router(users.user_router)
-api.include_router(users.api_router)
 api.include_router(useCases.router)
 api.include_router(subUseCases.router)
 api.include_router(roles.router)

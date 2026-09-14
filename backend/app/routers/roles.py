@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..models.users import User
-from ..crud.auth import get_current_user
+from ..crud.auth import get_current_user_from_token
 from ..crud import roles as crud
 from ..db import get_db
 from ..schemas.roles import *
@@ -31,12 +31,12 @@ def get_role_version(id: int, db: Session = Depends(get_db)):
 
 # ---------CREATE--------
 @router.post("/", response_model=Role)
-def create_role(data: RoleMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_role(data: RoleMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     return crud.create_role(db, data, current_user.username)
 
 # ---------UPDATE--------
 @router.put("/{id}", response_model=Role)
-def update_role(id: int, data: RoleMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_role(id: int, data: RoleMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     role = crud.get_role_by_id(db, id)
     if not role:
         raise HTTPException(status_code=404, detail="Rolle nicht gefunden")
@@ -44,7 +44,7 @@ def update_role(id: int, data: RoleMutate, db: Session = Depends(get_db), curren
 
 # ---------DELETE--------
 @router.delete("/{id}", status_code=204)
-def delete_role(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_role(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     role = crud.get_role_by_id(db, id)
     if not role:
         raise HTTPException(status_code=404, detail="Rolle nicht gefunden")

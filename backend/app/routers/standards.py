@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..crud import standards as crud
 from ..models.users import User
-from ..crud.auth import get_current_user
+from ..crud.auth import get_current_user_from_token
 from ..schemas.standards import *
 from ..schemas.logs import VersionInfo
 
@@ -31,12 +31,12 @@ def get_standard_version(id: int, db: Session = Depends(get_db)):
 
 # ---------CREATE--------
 @router.post("/", response_model=Standard)
-def create_standard(data: StandardMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_standard(data: StandardMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     return crud.create_standard(db, data, current_user.username)
 
 # ---------UPDATE--------
 @router.put("/{id}", response_model=Standard)
-def update_standard(id: int, data: StandardMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_standard(id: int, data: StandardMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     standard = crud.get_standard_by_id(db, id)
     if not standard:
         raise HTTPException(status_code=404, detail="Standard nicht gefunden")
@@ -45,7 +45,7 @@ def update_standard(id: int, data: StandardMutate, db: Session = Depends(get_db)
 
 # ---------DELETE--------
 @router.delete("/{id}", status_code=204)
-def delete_standard(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_standard(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     standard = crud.get_standard_by_id(db, id)
     if not standard:
         raise HTTPException(status_code=404, detail="Standard nicht gefunden")

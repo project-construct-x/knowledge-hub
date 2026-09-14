@@ -23,7 +23,14 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     cors_origins: str = "*"
     database_url: str = ""
-    secret_key: str = ""
+    frontend_url: str
+    session_secret_key: str
+    keycloak_server_url: str
+    keycloak_internal_url: str  # es werden zwei URLs benötigt, da der Test mit einer Remote-VM sonst nicht funktioniert
+    keycloak_external_url: str  # es werden zwei URLs benötigt, da der Test mit einer Remote-VM sonst nicht funktioniert
+    keycloak_realm: str
+    keycloak_client_id: str
+    keycloak_client_secret: str
 
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",

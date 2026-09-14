@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from xml.etree import ElementTree as ET
 from ..models.users import User
-from ..crud.auth import get_current_user
+from ..crud.auth import get_current_user_from_token
 from ..db import get_db
 from ..crud import subUseCases as crud
 from ..schemas.subUseCases import *
@@ -40,12 +40,12 @@ def list_subUseCases_by_role(role_id: int, db: Session = Depends(get_db)):
 
 # --------CREATE--------
 @router.post("/", response_model=SubUseCase)
-def create_subUseCase(data: SubUseCaseCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_subUseCase(data: SubUseCaseCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     return crud.create_subUseCase(db, data, current_user.username)
 
 # --------UPDATE--------
 @router.put("/{id}", response_model=SubUseCase)
-def update_subUseCase(id: int, data: SubUseCaseUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_subUseCase(id: int, data: SubUseCaseUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     subUseCase = crud.get_subUseCase_by_id(db, id)
     if not subUseCase:
         raise HTTPException(status_code=404, detail="Sub Use Case nicht gefunden")
@@ -53,7 +53,7 @@ def update_subUseCase(id: int, data: SubUseCaseUpdate, db: Session = Depends(get
 
 # ---------DELETE--------
 @router.delete("/{id}", status_code=204)
-def delete_subUseCase(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_subUseCase(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     subUseCase = crud.get_subUseCase_by_id(db, id)
     if not subUseCase:
         raise HTTPException(status_code=404, detail="Sub Use Case nicht gefunden")

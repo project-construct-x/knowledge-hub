@@ -1,4 +1,20 @@
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: http://localhost:8080
+      KC_HOSTNAME_PORT: "8080"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+
   db:
     image: postgres:16
     container_name: usecase-management_db-dev-user1
@@ -17,15 +33,16 @@ services:
       dockerfile: Dockerfile
     container_name: usecase-management_backend-user1
     ports:
-      - "8080:8080"
+      - "8001:8001"
     environment:
       - APP_ENV=development
     depends_on:
       - db
+      - keycloak
     volumes:
       - ./backend:/app
       - static_images_volume_dev:/app/static/images
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
 
   frontend:
     build:
@@ -46,3 +63,4 @@ volumes:
     name: usecase-management_db_data_dev_user1
   static_images_volume_dev:
     name: usecase-management_static_images_dev_user1
+  keycloak_data:

@@ -6,7 +6,7 @@ from ..models import models
 from ..models.users import User
 from ..schemas.useCases import *
 from ..schemas.logs import *
-from ..crud.auth import require_role, RoleEnum, get_current_user
+from ..crud.auth import require_role, RoleEnum, get_current_user_from_token
 
 router = APIRouter(prefix="/usecases", tags=["Use Cases"])
 
@@ -32,7 +32,7 @@ def get_useCase_version(id: int, db: Session = Depends(get_db)):
 
 # ---------CREATE--------
 @router.post("/", response_model=UseCase)
-def create_useCase(data: UseCaseCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_useCase(data: UseCaseCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     roles = db.query(models.Role).filter(models.Role.id.in_(data.roles)).all()
     if len(roles) != len(data.roles):
         raise HTTPException(status_code=400, detail="Eine oder mehrere Rollen nicht gefunden")
@@ -40,7 +40,7 @@ def create_useCase(data: UseCaseCreate, db: Session = Depends(get_db), current_u
 
 # ---------UPDATE--------
 @router.put("/{id}", response_model=UseCase)
-def update_useCase(id: int, data: UseCaseUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_useCase(id: int, data: UseCaseUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     roles = db.query(models.Role).filter(models.Role.id.in_(data.roles)).all()
     if len(roles) != len(data.roles):
         raise HTTPException(status_code=400, detail="Eine oder mehrere Rollen nicht gefunden")
@@ -54,7 +54,7 @@ def update_useCase(id: int, data: UseCaseUpdate, db: Session = Depends(get_db), 
 
 # ---------DELETE--------
 @router.delete("/{id}", status_code=204)
-def delete_useCase(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_useCase(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     useCase = crud.get_useCase_by_id(db, id)
     if not useCase:
         raise HTTPException(status_code=404, detail="Use Case nicht gefunden")

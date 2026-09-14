@@ -4,8 +4,7 @@ import type { User } from '../types';
 
 interface AuthContextType {
     user: User | null;
-    login: (username: string, password: string) => Promise<void>;
-    loginWithApiKey: (apiKey: string) => Promise<void>;
+    login: () => void;
     logout: () => void;
     isAuthenticated: boolean;
     hasWriteAccess: boolean;

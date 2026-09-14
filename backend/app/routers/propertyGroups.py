@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
 from ..models.users import User
-from ..crud.auth import get_current_user
+from ..crud.auth import get_current_user_from_token
 from ..crud import propertyGroups as crud
 from ..schemas.propertyGroups import *
 from ..schemas.logs import VersionInfo
@@ -43,12 +43,12 @@ def get_propertyGroup_version(uuid: UUID, db: Session = Depends(get_db)):
 
 # --------CREATE-------
 @router.post("/", response_model=PropertyGroupResponse, status_code=201)
-def create_propertyGroup(property_group: PropertyGroupCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_propertyGroup(property_group: PropertyGroupCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     return crud.create_propertyGroup(db, property_group, current_user.username)
 
 # --------UPDATE-------
 @router.put("/{uuid}", response_model=PropertyGroupResponse)
-def update_propertyGroup(uuid: UUID, property_group: PropertyGroupUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_propertyGroup(uuid: UUID, property_group: PropertyGroupUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     updated = crud.update_propertyGroup(db, uuid, property_group, current_user.username)
     if not updated:
         raise HTTPException(status_code=404, detail="Property Group not found")
@@ -56,7 +56,7 @@ def update_propertyGroup(uuid: UUID, property_group: PropertyGroupUpdate, db: Se
 
 # --------DELETE-------
 @router.delete("/{uuid}", status_code=204)
-def delete_propertyGroup(uuid: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_propertyGroup(uuid: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     success = crud.delete_propertyGroup(db, uuid, current_user.username)
     if not success:
         raise HTTPException(status_code=404, detail="Property Group not found")

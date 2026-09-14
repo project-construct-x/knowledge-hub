@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..crud.auth import get_current_user
+from ..crud.auth import get_current_user_from_token
 from ..db import get_db
 from ..crud import transactions as crud
 from ..models.users import User
@@ -35,12 +35,12 @@ def list_transactions_by_subusecase(sub_id: int, db: Session = Depends(get_db)):
 
 # --------CREATE-------
 @router.post("/", response_model=Transaction)
-def create_transaction(data: TransactionMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_transaction(data: TransactionMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     return crud.create_transaction(db, data, current_user.username)
 
 # --------UPDATE-------
 @router.put("/{id}", response_model=Transaction)
-def update_transaction(id: int, data: TransactionMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_transaction(id: int, data: TransactionMutate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     transaction = crud.get_transaction_by_id(db, id)
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaktion nicht gefunden")
@@ -48,7 +48,7 @@ def update_transaction(id: int, data: TransactionMutate, db: Session = Depends(g
 
 # --------DELETE-------
 @router.delete("/{id}", status_code=204)
-def delete_transaction(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_transaction(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     transaction = crud.get_transaction_by_id(db, id)
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaktion nicht gefunden")

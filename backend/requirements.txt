@@ -1,4 +1,7 @@
 alembic
+authlib
+httpx
+itsdangerous
 fastapi
 uvicorn[standard]
 sqlalchemy

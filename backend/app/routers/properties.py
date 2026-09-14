@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..schemas.logs import VersionInfo
 from ..models.users import User
-from ..crud.auth import get_current_user
+from ..crud.auth import get_current_user_from_token
 from ..db import get_db
 from ..crud import properties as crud
 from ..schemas.properties import *
@@ -37,13 +37,13 @@ def get_property_version(uuid: UUID, db: Session = Depends(get_db)):
 
 # --------CREATE-------
 @router.post("/", response_model=PropertyResponse, status_code=201)
-def create_property(prop: PropertyCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_property(prop: PropertyCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     return crud.create_property(db, prop, current_user.username)
 
 
 # --------UPDATE-------
 @router.put("/{uuid}", response_model=PropertyResponse)
-def update_property(uuid: UUID, prop: PropertyUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_property(uuid: UUID, prop: PropertyUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     updated = crud.update_property(db, uuid, prop, current_user.username)
     if not updated:
         raise HTTPException(status_code=404, detail="Property not found")
@@ -52,7 +52,7 @@ def update_property(uuid: UUID, prop: PropertyUpdate, db: Session = Depends(get_
 
 # --------DELETE-------
 @router.delete("/{uuid}", status_code=204)
-def delete_property(uuid: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_property(uuid: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
     success = crud.delete_property(db, uuid, current_user.username)
     if not success:
         raise HTTPException(status_code=404, detail="Property not found")

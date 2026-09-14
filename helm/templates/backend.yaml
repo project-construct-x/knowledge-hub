@@ -43,11 +43,16 @@ spec:
           env:
             - name: DATABASE_URL
               value: {{ printf "postgresql://%s:%s@usecase-management-db:5432/%s" .Values.db.user .Values.db.password .Values.db.db | quote }}
-            - name: SECRET_KEY
+            - name: KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: usecase-management-secret
-                  key: SECRET_KEY
+                  key: KEYCLOAK_CLIENT_SECRET
+            - name: SESSION_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: usecase-management-secret
+                  key: SESSION_SECRET_KEY
           volumeMounts:
             - name: static-images
               mountPath: "/app/static/images"
