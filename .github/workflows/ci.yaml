@@ -21,7 +21,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_BASE: ghcr.io/project-construct-x/usecase-management
+  IMAGE_BASE: ghcr.io/project-construct-x/knowledge-hub
 
 jobs:
   changes:

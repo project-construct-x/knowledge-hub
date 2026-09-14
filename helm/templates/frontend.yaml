@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: usecase-management-frontend
+  name: knowledge-hub-frontend
 spec:
   selector:
-    app: usecase-management-frontend
+    app: knowledge-hub-frontend
   ports:
     - port: 80
       name: http
@@ -12,16 +12,16 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: usecase-management-frontend
+  name: knowledge-hub-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usecase-management-frontend
+      app: knowledge-hub-frontend
   template:
     metadata:
       labels:
-        app: usecase-management-frontend
+        app: knowledge-hub-frontend
     spec:
       containers:
         - name: frontend
@@ -29,4 +29,4 @@ spec:
           ports:
             - containerPort: 80
       imagePullSecrets:
-        - name: usecase-mgmnt-registry-creds
+        - name: knowledge-hub-registry-creds

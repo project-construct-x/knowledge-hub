@@ -1,17 +1,17 @@
 backend:
   image:
-    repository: ghcr.io/project-construct-x/usecase-management-backend
+    repository: ghcr.io/project-construct-x/knowledge-hub-backend
     tag: latest
   storage:
     size: 30Gi
 
 frontend:
   image:
-    repository: ghcr.io/project-construct-x/usecase-management-frontend
+    repository: ghcr.io/project-construct-x/knowledge-hub-frontend
     tag: latest
 
 ingress:
-  host: usecase-management.staging.construct-x.net
+  host: knowledge-hub.staging.construct-x.net
 
 db:
   user: "user"

@@ -10,12 +10,12 @@ from .exceptions import VersionConflictError
 settings = get_settings()
 
 app = FastAPI(
-    title="Construct-X UseCase Management API",
+    title="Construct-X Knowledge Hub API",
     description="Manage use cases and related information.",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
     swagger_ui_init_oauth={
-        "clientId": "usecase-management-dev-swagger",
+        "clientId": "knowledge-hub-dev-swagger",
         "usePkceWithAuthorizationCodeGrant": True,
         "scopes": "openid profile email",
     },

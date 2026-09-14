@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: usecase-management-backend-images-pvc
+  name: knowledge-hub-backend-images-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -13,10 +13,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: usecase-management-backend
+  name: knowledge-hub-backend
 spec:
   selector:
-    app: usecase-management-backend
+    app: knowledge-hub-backend
   ports:
     - port: 8080
       name: http
@@ -24,16 +24,16 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: usecase-management-backend
+  name: knowledge-hub-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usecase-management-backend
+      app: knowledge-hub-backend
   template:
     metadata:
       labels:
-        app: usecase-management-backend
+        app: knowledge-hub-backend
     spec:
       containers:
         - name: backend
@@ -42,16 +42,16 @@ spec:
             - containerPort: 8080
           env:
             - name: DATABASE_URL
-              value: {{ printf "postgresql://%s:%s@usecase-management-db:5432/%s" .Values.db.user .Values.db.password .Values.db.db | quote }}
+              value: {{ printf "postgresql://%s:%s@knowledge-hub-db:5432/%s" .Values.db.user .Values.db.password .Values.db.db | quote }}
             - name: KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: usecase-management-secret
+                  name: knowledge-hub-secret
                   key: KEYCLOAK_CLIENT_SECRET
             - name: SESSION_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: usecase-management-secret
+                  name: knowledge-hub-secret
                   key: SESSION_SECRET_KEY
           volumeMounts:
             - name: static-images
@@ -59,6 +59,6 @@ spec:
       volumes:
         - name: static-images
           persistentVolumeClaim:
-            claimName: usecase-management-backend-images-pvc
+            claimName: knowledge-hub-backend-images-pvc
       imagePullSecrets:
-        - name: usecase-mgmnt-registry-creds
+        - name: knowledge-hub-registry-creds

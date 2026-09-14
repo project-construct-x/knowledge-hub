@@ -1,6 +1,6 @@
 backend:
   image:
-    repository: ghcr.io/project-construct-x/usecase-management-backend
+    repository: ghcr.io/project-construct-x/knowledge-hub-backend
     tag: latest
   storage:
     className: premium-perf1-stackit
@@ -8,11 +8,11 @@ backend:
 
 frontend:
   image:
-    repository: ghcr.io/project-construct-x/usecase-management-frontend
+    repository: ghcr.io/project-construct-x/knowledge-hub-frontend
     tag: latest
 
 ingress:
-  host: usecase-management.example.com
+  host: knowledge-hub.example.com
   className: nginx
   clusterIssuer: letsencrypt-prod
 

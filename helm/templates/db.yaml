@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: usecase-management-db
+  name: knowledge-hub-db
 spec:
   selector:
-    app: usecase-management-db
+    app: knowledge-hub-db
   ports:
     - port: 5432
       name: postgres
@@ -12,7 +12,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: usecase-management-db-pvc
+  name: knowledge-hub-db-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -24,16 +24,16 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: usecase-management-db
+  name: knowledge-hub-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usecase-management-db
+      app: knowledge-hub-db
   template:
     metadata:
       labels:
-        app: usecase-management-db
+        app: knowledge-hub-db
     spec:
       containers:
         - name: postgres
@@ -55,4 +55,4 @@ spec:
       volumes:
         - name: db-data
           persistentVolumeClaim:
-            claimName: usecase-management-db-pvc
+            claimName: knowledge-hub-db-pvc

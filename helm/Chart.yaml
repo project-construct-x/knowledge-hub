@@ -1,6 +1,6 @@
 apiVersion: v2
-name: usecase-management
-description: A Helm chart for the Use Case Management (DB, Backend, Frontend)
+name: knowledge-hub
+description: A Helm chart for the Knowledge-Hub (DB, Backend, Frontend)
 type: application
 version: 0.1.0
 appVersion: "1.0.0"

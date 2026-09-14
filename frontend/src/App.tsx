@@ -67,7 +67,7 @@ function AppContent() {
             <Database className="text-white" size={22} />
           </div>
           <div>
-            <div className="sidebar-brand-name">Use Case Management</div>
+            <div className="sidebar-brand-name">Knowledge Hub</div>
             <div className="sidebar-brand-sub">BUW - DPBB</div>
           </div>
         </div>

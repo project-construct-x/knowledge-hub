@@ -17,7 +17,7 @@ services:
 
   db:
     image: postgres:16
-    container_name: usecase-management_db-dev-user1
+    container_name: knowledge-hub_db-dev-user1
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: dev_pass_user1
@@ -31,7 +31,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: usecase-management_backend-user1
+    container_name: knowledge-hub_backend-user1
     ports:
       - "8001:8001"
     environment:
@@ -48,7 +48,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: usecase-management_frontend-user1
+    container_name: knowledge-hub_frontend-user1
     ports:
       - "3000:3000"
     depends_on:
@@ -60,7 +60,7 @@ services:
 
 volumes:
   db_data_dev:
-    name: usecase-management_db_data_dev_user1
+    name: knowledge-hub_db_data_dev_user1
   static_images_volume_dev:
-    name: usecase-management_static_images_dev_user1
+    name: knowledge-hub_static_images_dev_user1
   keycloak_data:

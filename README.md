@@ -1,10 +1,10 @@
-# UseCase Management
+# Knowledge Hub
 
 Web-Anwendung zur strukturierten, verknüpften Darstellung der Inhalte aus den Arbeitspaketen 1 und 2 im Projekt **Construct-X**.
 
 ## Über das Projekt
 
-Das Repository **usecase-management** enthält den Quellcode einer Web-Anwendung, die im Projekt Construct-X eingesetzt wird.  
+Das Repository **knowledge-hub** enthält den Quellcode einer Web-Anwendung, die im Projekt Construct-X eingesetzt wird.  
 Die Anwendung sammelt Inhalte aus den Arbeitspaketen 1 und 2, stellt diese für Projektbeteiligte zusammenhängend und nachvollziehbar dar und ermöglicht deren Bearbeitung.  
 Für Authentifizierung und Autorisierung wird **Keycloak** eingesetzt.
 
@@ -29,13 +29,13 @@ Die Anwendung richtet sich insbesondere an:
 
 ## Zugriff
 
-- **Deployment:** `https://beispiel.com/usecase-management`
-- **Repository:** `https://github.com/project-construct-x/usecase-management`
+- **Deployment:** `https://beispiel.com/knowledge-hub`
+- **Repository:** `https://github.com/project-construct-x/knowledge-hub`
 
 ## Projektstruktur
 
 ```text
-usecase-management/
+knowledge-hub/
 ├─ frontend/              # Vite + React Frontend
 ├─ backend/               # FastAPI Backend
 ├─ docs/                  # Projektdokumentation / Assets

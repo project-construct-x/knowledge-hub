@@ -2,8 +2,8 @@
 set -euo pipefail
 
 CLUSTER="borrmann-dev"
-NAMESPACE="usecase-management-staging"
-RELEASE="usecase-management"
+NAMESPACE="knowledge-hub-staging"
+RELEASE="knowledge-hub"
 CHART_DIR="$(dirname "$0")"
 
 usage() {

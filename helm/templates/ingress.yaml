@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: usecase-management
+  name: knowledge-hub
   annotations:
     cert-manager.io/cluster-issuer:
       {{ .Values.ingress.clusterIssuer | quote }}
@@ -11,7 +11,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
-      secretName: usecase-management-tls
+      secretName: knowledge-hub-tls
   rules:
     - host: {{ .Values.ingress.host }}
       http:
@@ -20,13 +20,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: usecase-management-backend
+                name: knowledge-hub-backend
                 port:
                   number: 8080
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: usecase-management-frontend
+                name: knowledge-hub-frontend
                 port:
                   number: 80

@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16
-    container_name: usecase-management_db-prod
+    container_name: knowledge-hub_db-prod
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -13,8 +13,8 @@ services:
       - app-network
 
   backend:
-    image: ghcr.io/project-construct-x/usecase-management-backend:latest
-    container_name: usecase-management_backend-prod
+    image: ghcr.io/project-construct-x/knowledge-hub-backend:latest
+    container_name: knowledge-hub_backend-prod
     environment:
       APP_ENV: production
     ports:
@@ -27,8 +27,8 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   frontend:
-    image: ghcr.io/project-construct-x/usecase-management-frontend:latest
-    container_name: usecase-management_frontend-prod
+    image: ghcr.io/project-construct-x/knowledge-hub-frontend:latest
+    container_name: knowledge-hub_frontend-prod
     ports:
       - "80:80"
     depends_on:
