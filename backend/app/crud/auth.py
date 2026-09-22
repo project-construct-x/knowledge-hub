@@ -32,20 +32,23 @@ async def get_current_user_from_token(
     if username is None:
         raise credentials_exception
 
+    roles = payload.get("realm_access", {}).get("roles", [])
+    current_role = RoleEnum.WRITE if "write" in roles else RoleEnum.READ
+
     user = db.query(User).filter(User.username == username).first()
     if user is None:
-        # Just-in-Time Provisioning: User existiert in Keycloak, aber noch nicht lokal
-        roles = payload.get("realm_access", {}).get("roles", [])
-        role = RoleEnum.WRITE if "write" in roles else RoleEnum.READ
         user = User(
             username=username,
             email=payload.get("email", ""),
-            role=role,
+            role=current_role,
             hashed_password="",  # nicht mehr genutzt, Login läuft über Keycloak
         )
         db.add(user)
-        db.commit()
-        db.refresh(user)
+    elif user.role != current_role:
+        user.role = current_role
+
+    db.commit()
+    db.refresh(user)
     return user
 
 
