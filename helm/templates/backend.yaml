@@ -46,12 +46,12 @@ spec:
             - name: KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: keycloak-client-secret
+                  name: knowledge-hub-secret
                   key: KEYCLOAK_CLIENT_SECRET
             - name: SESSION_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: session-secret-key
+                  name: knowledge-hub-secret
                   key: SESSION_SECRET_KEY
           volumeMounts:
             - name: static-images
