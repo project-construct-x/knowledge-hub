@@ -49,7 +49,7 @@ app.add_middleware(
 
 api = APIRouter(prefix="/api")
 
-@app.get("/health")
+@api.get("/health")
 def health() -> Response:
     return Response(content="ok\n", media_type="text/plain")
 
