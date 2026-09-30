@@ -18,7 +18,7 @@ spec:
   selector:
     app: knowledge-hub-backend
   ports:
-    - port: 8080
+    - port: 8001
       name: http
 ---
 apiVersion: apps/v1
@@ -38,8 +38,9 @@ spec:
       containers:
         - name: backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 8001
           env:
             - name: DATABASE_URL
               value: {{ printf "postgresql://%s:%s@knowledge-hub-db:5432/%s" .Values.db.user .Values.db.password .Values.db.db | quote }}

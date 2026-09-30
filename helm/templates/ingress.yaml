@@ -22,7 +22,7 @@ spec:
               service:
                 name: knowledge-hub-backend
                 port:
-                  number: 8080
+                  number: 8001
           - path: /
             pathType: Prefix
             backend:
