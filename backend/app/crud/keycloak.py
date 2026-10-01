@@ -1,6 +1,6 @@
 from authlib.integrations.starlette_client import OAuth
 from jose import jwt
-import httpx
+import httpx2
 from ..config import get_settings
 
 settings = get_settings()
@@ -23,7 +23,7 @@ async def _get_jwks() -> dict:
     global _jwks_cache
     if _jwks_cache is None:
         metadata = await oauth.keycloak.load_server_metadata()
-        async with httpx.AsyncClient() as client:
+        async with httpx2.AsyncClient() as client:
             resp = await client.get(metadata["jwks_uri"])
             resp.raise_for_status()
             _jwks_cache = resp.json()

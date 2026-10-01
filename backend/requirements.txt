@@ -1,11 +1,11 @@
 alembic
 authlib
-httpx
+httpx2
 itsdangerous
 fastapi
 uvicorn[standard]
 sqlalchemy
-psycopg2-binary
+psycopg2-binary>=3.1
 pydantic-settings
 python-multipart
 python-jose[cryptography]
