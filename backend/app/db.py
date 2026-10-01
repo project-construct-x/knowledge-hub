@@ -5,6 +5,8 @@ from .config import get_settings
 # Load environment variables
 settings = get_settings()
 database_url = settings.database_url
+if database_url.startswith("postgresql://"):
+    database_url = database_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 engine = create_engine(database_url, echo=False, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
