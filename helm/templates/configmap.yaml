@@ -8,6 +8,7 @@ data:
   BACKEND_PORT: "8001"
   IMAGE_DIR: "/app/static/images"
   CORS_ORIGINS: {{ printf "https://%s" .Values.ingress.host | quote }}
+  FRONTEND_URL: {{ printf "https://%s" .Values.ingress.host | quote }}
   KEYCLOAK_SERVER_URL: {{ .Values.keycloak.url | quote }}
   KEYCLOAK_INTERNAL_URL: {{ .Values.keycloak.url | quote }}
   KEYCLOAK_EXTERNAL_URL: {{ .Values.keycloak.url | quote }}
