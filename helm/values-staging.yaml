@@ -18,7 +18,7 @@ ingress:
 
 keycloak:
   url: https://centralidp.staging.construct-x.net/auth
-  realm: knowledge-hub
+  realm: CX-Central
   clientId: knowledge-hub
 
 db:
