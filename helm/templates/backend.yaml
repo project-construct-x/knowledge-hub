@@ -5,7 +5,6 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ .Values.backend.storage.className }}
   resources:
     requests:
       storage: {{ .Values.backend.storage.size }}
@@ -41,9 +40,15 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8001
+          envFrom:
+            - configMapRef:
+                name: knowledge-hub-config
           env:
             - name: DATABASE_URL
-              value: {{ printf "postgresql://%s:%s@knowledge-hub-db:5432/%s" .Values.db.user .Values.db.password .Values.db.db | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: knowledge-hub-secret
+                  key: DATABASE_URL
             - name: KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -57,6 +62,18 @@ spec:
           volumeMounts:
             - name: static-images
               mountPath: "/app/static/images"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
       volumes:
         - name: static-images
           persistentVolumeClaim:

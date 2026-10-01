@@ -1,3 +1,6 @@
+appEnv: staging
+logLevel: INFO
+
 backend:
   image:
     repository: ghcr.io/project-construct-x/knowledge-hub-backend
@@ -13,9 +16,13 @@ frontend:
 ingress:
   host: knowledge-hub.staging.construct-x.net
 
+keycloak:
+  url: https://centralidp.staging.construct-x.net/auth
+  realm: knowledge-hub
+  clientId: knowledge-hub
+
 db:
   user: "user"
-  password: "dev_pass_user1"
-  db: "appdb_dev_user1"
+  db: "appdb_knowledge_hub_staging"
   storage:
     size: 30Gi

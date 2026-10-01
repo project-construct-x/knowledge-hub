@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: knowledge-hub-config
+data:
+  APP_ENV: {{ .Values.appEnv | quote }}
+  LOG_LEVEL: {{ .Values.logLevel | quote }}
+  BACKEND_PORT: "8001"
+  IMAGE_DIR: "/app/static/images"
+  CORS_ORIGINS: {{ printf "https://%s" .Values.ingress.host | quote }}
+  KEYCLOAK_SERVER_URL: {{ .Values.keycloak.url | quote }}
+  KEYCLOAK_INTERNAL_URL: {{ .Values.keycloak.url | quote }}
+  KEYCLOAK_EXTERNAL_URL: {{ .Values.keycloak.url | quote }}
+  KEYCLOAK_REALM: {{ .Values.keycloak.realm | quote }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.keycloak.clientId | quote }}
