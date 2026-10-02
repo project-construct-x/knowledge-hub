@@ -1,7 +1,7 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parent
@@ -46,6 +46,13 @@ class Settings(BaseSettings):
             for origin in self.cors_origins.split(",")
             if origin.strip()
         ]
+
+    @field_validator("database_url")
+    @classmethod
+    def force_psycopg2_driver(cls, v: str) -> str:
+        if v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+psycopg2://", 1)
+        return v
 
 @lru_cache
 def get_settings() -> Settings:
