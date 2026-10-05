@@ -14,6 +14,7 @@ app = FastAPI(
     description="Manage use cases and related information.",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
+    swagger_ui_oauth2_redirect_url="/api/docs/oauth2-redirect",
     swagger_ui_init_oauth={
         "clientId": "knowledge-hub-dev-swagger",
         "usePkceWithAuthorizationCodeGrant": True,
