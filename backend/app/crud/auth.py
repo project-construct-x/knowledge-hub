@@ -32,7 +32,7 @@ async def get_current_user_from_token(
     if username is None:
         raise credentials_exception
 
-    roles = payload.get("realm_access", {}).get("roles", [])
+    roles = payload.get("knowledge-hub", {}).get("roles", [])
     current_role = RoleEnum.WRITE if "write" in roles else RoleEnum.READ
 
     user = db.query(User).filter(User.username == username).first()
