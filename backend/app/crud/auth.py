@@ -17,7 +17,8 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 async def get_current_user_from_token(
-        token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    client_id = settings.keycloak_client_id  # "knowledge-hub"
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Ungültige Authentifizierung",
@@ -32,7 +33,8 @@ async def get_current_user_from_token(
     if username is None:
         raise credentials_exception
 
-    roles = payload.get("knowledge-hub", {}).get("roles", [])
+    roles = set(payload.get("realm_access", {}).get("roles", []))
+    roles |= set(payload.get("resource_access", {}).get(client_id, {}).get("roles", []))
     current_role = RoleEnum.WRITE if "write" in roles else RoleEnum.READ
 
     user = db.query(User).filter(User.username == username).first()
