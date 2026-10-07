@@ -28,7 +28,7 @@ def get_propertyGroup_version(db: Session, uuid: UUID):
 def create_propertyGroup(db: Session, property_group: PropertyGroupCreate, current_user: str) -> models.PropertyGroup:
     db_property_group = models.PropertyGroup(**property_group.dict())
     set_creation_timestamps(db_property_group)
-    db_property_group.created_by = current_user
+    db_property_group.updated_by = current_user
 
     db.add(db_property_group)
     db.flush()
