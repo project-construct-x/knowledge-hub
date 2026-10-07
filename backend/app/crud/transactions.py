@@ -24,6 +24,7 @@ def get_transaction_version(db: Session, transaction_id: int):
 
 def create_transaction(db: Session, data: TransactionMutate, current_user: str):
     transaction = models.Transaction(**data.dict(exclude={"property_uuids"}))
+    transaction.updated_by = current_user
 
     if data.property_uuids:
         props = db.execute(select(models.Property).where(models.Property.UUID.in_(data.property_uuids))).scalars().all()

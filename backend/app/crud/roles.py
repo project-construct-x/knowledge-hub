@@ -21,6 +21,7 @@ def get_role_version(db: Session, role_id: int):
 
 def create_role(db: Session, data: RoleMutate, current_user: str):
     role = models.Role(**data.dict())
+    role.updated_by = current_user
     db.add(role)
     db.flush()
     log = create_audit_log("roles", str(role.id), current_user, "", data.model_dump(mode="json"), "created")

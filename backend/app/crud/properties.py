@@ -26,6 +26,7 @@ def get_property_version(db: Session, uuid: UUID):
 def create_property(db: Session, prop: PropertyCreate, current_user: str) -> models.Property:
     db_prop = models.Property(**prop.dict())
     set_creation_timestamps(db_prop)
+    db_prop.updated_by = current_user
 
     # Nur dieses Feld manuell setzen (das ist nicht im Schema)
     db_prop.groups = db_prop.groups or []  # Statt [uuid4()]

@@ -39,6 +39,7 @@ def create_subUseCase(db: Session, data: SubUseCaseCreate, current_user: str):
         distinction_from_other_sucs=data.distinction_from_other_sucs,
         dependency_of_other_sucs=data.dependency_of_other_sucs,
         assumptions=data.assumptions,
+        updated_by=current_user
     )
     db.add(sub)
     db.flush()

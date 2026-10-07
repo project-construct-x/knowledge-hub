@@ -32,6 +32,7 @@ def get_standard_version(db: Session, standard_id: int):
 def create_standard(db: Session, data: StandardMutate, current_user: str):
     payload = data.model_dump(exclude={"useCase_ids"})
     standard = models.Standard(**payload)
+    standard.updated_by = current_user
 
     usecase_ids = getattr(data, "useCase_ids", []) or []
     standard.useCases = [get_useCase_by_id(db, id) for id in usecase_ids]
