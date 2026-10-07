@@ -32,7 +32,7 @@ def create_property(db: Session, prop: PropertyCreate, current_user: str) -> mod
     db_prop.groups = db_prop.groups or []  # Statt [uuid4()]
     db.add(db_prop)
     db.flush()
-    log = create_audit_log("properties", str(db_prop.UUID), current_user, "", prop.model_dump(), "created")
+    log = create_audit_log("properties", str(db_prop.UUID), current_user, "", prop.model_dump(mode="json"), "created")
     db.add(log)
     db.commit()
     db.refresh(db_prop)
