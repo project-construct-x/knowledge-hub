@@ -1,13 +1,18 @@
 from fastapi import FastAPI, Request, APIRouter
 from fastapi.responses import JSONResponse, Response
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from .routers import auth, useCases, subUseCases, roles, transactions, properties, propertyGroups, users, ontology, standards
 from .config import IMAGE_DIR, get_settings
 from .exceptions import VersionConflictError
+import logging
 
 settings = get_settings()
+
+logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI(
     title="Construct-X Knowledge Hub API",
@@ -34,6 +39,28 @@ async def version_conflict_handler(request: Request, exc: VersionConflictError):
             "updated_by": exc.updated_by,
             "updated_at": exc.updated_at.isoformat() if exc.updated_at else None,
         },
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+
+    for err in errors:
+        logger.warning(
+            "422 on %s %s | field=%s | type=%s | msg=%s | input=%r",
+            request.method,
+            request.url.path,
+            ".".join(str(p) for p in err["loc"]),
+            err["type"],
+            err["msg"],
+            err.get("input"),
+        )
+
+    logger.debug("422 request body: %s", exc.body)
+
+    return JSONResponse(
+        status_code=422,
+        content={"detail": jsonable_encoder(errors)},
     )
 
 app.add_middleware(
