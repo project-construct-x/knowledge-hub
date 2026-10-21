@@ -16,6 +16,7 @@ class SubUseCaseRoleRead(SubUseCaseRoleBase):
 
 class SubUseCaseBase(BaseModel):
     name: str
+    short_name: Optional[str] = None
     useCase_id: int
     description: str
     conx_id: Optional[str] = None
@@ -26,6 +27,7 @@ class SubUseCaseBase(BaseModel):
     distinction_from_other_sucs: Optional[str] = None
     dependency_of_other_sucs: Optional[str] = None
     assumptions: Optional[str] = None
+    bpmn_xml: Optional[str] = None
 
 class SubUseCaseCreate(SubUseCaseBase):
     subUseCase_roles: List[SubUseCaseRoleBase] = []
@@ -44,6 +46,5 @@ class SubUseCase(SubUseCaseBase):
     updated_by: str | None = None
     subUseCase_roles: List[SubUseCaseRoleRead] = []
     bpmn_png_url: Optional[str] = None
-    bpmn_xml: Optional[str] = None
     class Config:
         from_attributes = True

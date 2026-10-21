@@ -29,8 +29,9 @@ def get_subUseCase_version(db: Session, subUseCase_id: int):
 def create_subUseCase(db: Session, data: SubUseCaseCreate, current_user: str):
     sub = models.SubUseCase(
         name=data.name,
-        description = data.description,
-        conx_id= data.conx_id,
+        short_name=data.short_name,
+        description=data.description,
+        conx_id=data.conx_id,
         useCase_id=data.useCase_id,
         objective=data.objective,
         inputs=data.inputs,
@@ -39,6 +40,7 @@ def create_subUseCase(db: Session, data: SubUseCaseCreate, current_user: str):
         distinction_from_other_sucs=data.distinction_from_other_sucs,
         dependency_of_other_sucs=data.dependency_of_other_sucs,
         assumptions=data.assumptions,
+        bpmn_xml=data.bpmn_xml,
         updated_by=current_user
     )
     db.add(sub)
