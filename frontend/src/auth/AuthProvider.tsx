@@ -38,6 +38,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(userData);
     } catch (error) {
       console.error('Fehler beim Laden des Benutzers:', error);
+      // Try to refresh token if possible
+      const refresh = localStorage.getItem('refresh_token');
+      if (refresh) {
+        try {
+          const newTokens = await api.refreshToken(refresh);
+          localStorage.setItem('access_token', newTokens.access_token);
+          if (newTokens.refresh_token) localStorage.setItem('refresh_token', newTokens.refresh_token);
+          if (newTokens.id_token) localStorage.setItem('id_token', newTokens.id_token);
+          // Retry fetching user
+          const userData = await api.getCurrentUser();
+          setUser(userData);
+          setIsLoading(false);
+          return;
+        } catch (refreshError) {
+          console.error('Refresh failed:', refreshError);
+        }
+      }
       logout();
     } finally {
       setIsLoading(false);
