@@ -51,20 +51,27 @@ async def refresh(request: Request):
     refresh_token = body.get("refresh_token")
     if not refresh_token:
         raise HTTPException(status_code=400, detail="refresh_token missing")
-    token_url = f"{settings.keycloak_internal_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/token"
-    async with httpx2.AsyncClient() as client:
-        resp = await client.post(
-            token_url,
-            data={
-                "grant_type": "refresh_token",
-                "client_id": settings.keycloak_client_id,
-                "client_secret": settings.keycloak_client_secret,
-                "refresh_token": refresh_token,
-            },
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-        )
-        resp.raise_for_status()
-        token = resp.json()
+    # Log the refresh attempt (mask the token for security)
+    import logging
+    logger = logging.getLogger("auth.refresh")
+    logger.info("Refresh token request received")
+    token_url = f"{settings.keycloak_external_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/token"
+    try:
+        async with httpx2.AsyncClient(auth=(settings.keycloak_client_id, settings.keycloak_client_secret)) as client:
+            resp = await client.post(
+                token_url,
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+            resp.raise_for_status()
+            token = resp.json()
+    except Exception as e:
+        logger.error(f"Token refresh failed: {e}")
+        raise HTTPException(status_code=502, detail="Failed to refresh token")
+    logger.info("Token refreshed successfully")
     return {
         "access_token": token.get("access_token"),
         "refresh_token": token.get("refresh_token", ""),
