@@ -51,6 +51,39 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {...opts, headers});
 
   if (!res.ok) {
+    // Attempt automatic token refresh on 401
+    if (res.status === 401) {
+      const refresh = localStorage.getItem('refresh_token');
+      if (refresh) {
+        try {
+          const newTokens = await api.refreshToken(refresh);
+          // Update stored tokens
+          localStorage.setItem('access_token', newTokens.access_token);
+          if (newTokens.refresh_token) localStorage.setItem('refresh_token', newTokens.refresh_token);
+          if (newTokens.id_token) localStorage.setItem('id_token', newTokens.id_token);
+          // Retry the original request with new access token
+          const retryHeaders = new Headers(opts.headers);
+          retryHeaders.set('Authorization', `Bearer ${newTokens.access_token}`);
+          const retryRes = await fetch(`${BASE}${path}`, {...opts, headers: retryHeaders});
+          if (retryRes.ok) {
+            if (retryRes.status === 204) return null as T;
+            return retryRes.json() as Promise<T>;
+          }
+          // If retry also fails, fall through to error handling below
+          let retryDetail: unknown;
+          try {
+            retryDetail = await retryRes.json();
+          } catch {
+            retryDetail = await retryRes.text();
+          }
+          throw new ApiError(retryRes.status, retryDetail);
+        } catch (refreshErr) {
+          // Refresh failed – proceed to original error handling
+          console.error('Token refresh failed:', refreshErr);
+        }
+      }
+    }
+    // Original error handling
     let detail: unknown;
     try {
       detail = await res.json();
@@ -66,6 +99,7 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
 export const api = {
   // ---Auth---
   login: (username: string, password: string) => {
+      // existing login remains
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
@@ -75,6 +109,13 @@ export const api = {
       body: formData,
     });
   },
+  // Refresh token using stored refresh token
+  refreshToken: (refreshToken: string) =>
+      request<{ access_token: string; refresh_token: string; id_token: string }>("/auth/refresh", {
+          method: "POST",
+          body: JSON.stringify({ refresh_token: refreshToken }),
+          headers: { "Content-Type": "application/json" },
+      }),
 
   register: (data: UserCreate) =>
     request<User>("/register", {

@@ -1,7 +1,8 @@
-from fastapi import Request, APIRouter
+from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 from ..crud.keycloak import oauth
 from ..config import get_settings
+import httpx2
 from urllib.parse import urlencode
 
 
@@ -37,3 +38,35 @@ async def logout(id_token: str | None = None):
         params["client_id"] = settings.keycloak_client_id
 
     return RedirectResponse(f"{end_session_endpoint}?{urlencode(params)}")
+
+
+@auth_router.post("/auth/refresh")
+async def refresh(request: Request):
+    """Refresh access token using Keycloak refresh token.
+
+    Expects JSON body: {"refresh_token": "..."}
+    Returns new tokens (access_token, refresh_token, id_token).
+    """
+    body = await request.json()
+    refresh_token = body.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=400, detail="refresh_token missing")
+    token_url = f"{settings.keycloak_internal_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/token"
+    async with httpx2.AsyncClient() as client:
+        resp = await client.post(
+            token_url,
+            data={
+                "grant_type": "refresh_token",
+                "client_id": settings.keycloak_client_id,
+                "client_secret": settings.keycloak_client_secret,
+                "refresh_token": refresh_token,
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        resp.raise_for_status()
+        token = resp.json()
+    return {
+        "access_token": token.get("access_token"),
+        "refresh_token": token.get("refresh_token", ""),
+        "id_token": token.get("id_token", ""),
+    }
