@@ -53,7 +53,6 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
   if (!res.ok) {
     // Attempt automatic token refresh on 401
     if (res.status === 401) {
-        console.warn('Received 401 – attempting token refresh');
       const refresh = localStorage.getItem('refresh_token');
       if (refresh) {
         try {
