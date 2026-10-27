@@ -1,7 +1,7 @@
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    command: start-dev --import-realm
+    command: start-dev
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -14,7 +14,7 @@ services:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./dev-realm.json:/opt/keycloak/data/import/dev-realm.json
+      - ./knowledge-hub-dev-realm.json:/opt/keycloak/data/import/knowledge-hub-dev-realm.json
 
   db:
     image: postgres:16
