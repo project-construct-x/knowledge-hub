@@ -1,4 +1,5 @@
 import React, {useState, useMemo} from "react";
+import { useAuth } from "../auth/useAuth.ts";
 import { Link } from "react-router-dom";
 import { ChevronUp, ChevronDown, Search, Trash2, Edit2, Plus, Inbox } from "lucide-react";
 import type {MultiLangString} from "../types.ts";
@@ -63,6 +64,7 @@ export default function CrudTable<T extends { id: number | string }>({
                                                                        isLoading = false,
                                                                      }: Props<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
+  const { hasWriteAccess } = useAuth();
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [filterText, setFilterText] = useState("");
 
@@ -147,7 +149,8 @@ export default function CrudTable<T extends { id: number | string }>({
             <button
               onClick={onCreateClick}
               className="btn btn-primary btn-m"
-              disabled={createDisabled}
+              disabled={!!createDisabled || !hasWriteAccess}
+              title={createDisabled ?? !hasWriteAccess ? "Nur Schreibrechte können neue Einträge erstellen" : undefined}
             >
               <Plus size={15} />
               {createLabel}
@@ -250,7 +253,8 @@ export default function CrudTable<T extends { id: number | string }>({
                       <button
                         onClick={() => handleDelete(row.id)}
                         className="action-btn action-delete"
-                        title="Löschen"
+                        disabled={!hasWriteAccess}
+                        title={!hasWriteAccess ? "Nur Schreibrechte können Einträge löschen" : "Löschen"}
                       >
                         <Trash2 size={15} />
                       </button>

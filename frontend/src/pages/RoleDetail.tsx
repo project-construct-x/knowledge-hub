@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../auth/useAuth.ts";
 import { useParams, useNavigate } from "react-router-dom";
 import {api, ApiError} from "../api/api.ts";
 import type {Role, SubUseCase, VersionConflictDetail} from "../types.ts";
@@ -14,6 +15,7 @@ const emptyRole: Partial<Role> = {
 };
 
 export default function RoleDetail() {
+  const { hasWriteAccess } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState<Partial<Role>>(emptyRole);
@@ -251,8 +253,8 @@ export default function RoleDetail() {
 
         {/* Aktionen */}
         <div className="form-actions">
-          <button type="submit" disabled={loading} className="btn btn-primary">
-            {loading ? "Speichern…" : "Speichern"}
+          <button type="submit" disabled={loading || !hasWriteAccess} title={!hasWriteAccess ? "Nur Schreibrechte können speichern" : undefined} className="btn btn-primary">
+            {loading ? "Speichern…" : (hasWriteAccess ? "Speichern" : "Speichern (keine Schreibrechte)") }
           </button>
           <button type="button" onClick={() => navigate(-1)} className="btn btn-secondary">
             Zurück

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useAuth } from "../auth/useAuth.ts";
 import { useParams, useNavigate, useSearchParams, useBlocker } from "react-router-dom";
 import {api, ApiError} from "../api/api.ts";
 import type {SubUseCase, Role, UseCase, Transaction, VersionConflictDetail} from "../types.ts";
@@ -45,6 +46,7 @@ const emptySubUseCase: Partial<SubUseCase> = {
 };
 
 export default function SubUseCaseDetail() {
+  const { hasWriteAccess } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -874,7 +876,7 @@ export default function SubUseCaseDetail() {
 
         {/* Aktionen */}
         <div className="form-actions">
-          <button type="submit" disabled={loading} className="btn btn-primary">
+          <button type="submit" disabled={loading || !hasWriteAccess} title={!hasWriteAccess ? "Nur Schreibrechte können speichern" : undefined} className="btn btn-primary">
             {loading ? "Speichern…" : "Speichern"}
           </button>
           <button type="button" onClick={() => navigate(-1)} className="btn btn-secondary">

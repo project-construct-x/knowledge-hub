@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../auth/useAuth.ts";
 import { useParams, useNavigate } from "react-router-dom";
 import {api, ApiError} from "../api/api.ts";
 import type { Property, PropertyGroup, VersionConflictDetail } from "../types.ts";
@@ -20,6 +21,7 @@ const emptyProperty: Partial<Property> = {
 };
 
 export default function PropertyDetail() {
+  const { hasWriteAccess } = useAuth();
   const { uuid } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState<Partial<Property>>(emptyProperty);
@@ -584,8 +586,8 @@ export default function PropertyDetail() {
 
         {/* Aktionen */}
         <div className="form-actions">
-          <button type="submit" disabled={loading} className="btn btn-primary">
-            {loading ? "Speichern…" : "Speichern"}
+          <button type="submit" disabled={loading || !hasWriteAccess} title={!hasWriteAccess ? "Nur Schreibrechte können speichern" : undefined} className="btn btn-primary">
+            {loading ? "Speichern…" : (hasWriteAccess ? "Speichern" : "Speichern (keine Schreibrechte)") }
           </button>
           <button type="button" onClick={() => navigate(-1)} className="btn btn-secondary">
             Zurück
