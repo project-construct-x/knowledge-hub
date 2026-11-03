@@ -20,6 +20,7 @@ import ClassList from "./pages/ClassList.tsx";
 import ClassDetail from "./pages/ClassDetail.tsx";
 import UserManagement from "./pages/UserManagement.tsx";
 import OntologyGraph from "./pages/OntologyGraph.tsx";
+import TurtleViewer from "./pages/TurtleViewer";
 
 
 export const router = createBrowserRouter([
@@ -165,10 +166,17 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "turtle-viewer",
+        element: (
+          <ProtectedRoute>
+            <TurtleViewer />
+          </ProtectedRoute>
+        ),
+      },
 
 
-
-      {/* Admin Routes */},
+      // Admin Routes
       {
         path: "users",
         element: (
