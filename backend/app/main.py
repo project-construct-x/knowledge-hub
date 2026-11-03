@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, APIRouter
+from fastapi import FastAPI, Request, APIRouter, Depends
 from fastapi.responses import JSONResponse, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from .routers import auth, useCases, subUseCases, roles, transactions, properties, propertyGroups, users, ontology, standards
+from .crud.auth import get_current_user_from_token
 from .config import IMAGE_DIR, get_settings
 from .exceptions import VersionConflictError
 import logging
@@ -76,15 +77,16 @@ app.add_middleware(
     secret_key=get_settings().session_secret_key,
 )
 
-api = APIRouter(prefix="/api")
+api = APIRouter(prefix="/api", dependencies=[Depends(get_current_user_from_token)])
 
-@api.get("/health")
-def health() -> Response:
-    return Response(content="ok\n", media_type="text/plain")
+
 
 app.mount("/static/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
-api.include_router(auth.auth_router)
+# Public auth endpoints (no token required)
+app.include_router(auth.auth_router, prefix="/api")
+
+# Authenticated API routes
 api.include_router(users.user_router)
 api.include_router(useCases.router)
 api.include_router(subUseCases.router)
@@ -95,3 +97,8 @@ api.include_router(propertyGroups.router)
 api.include_router(ontology.router)
 api.include_router(standards.router)
 app.include_router(api)
+
+# Public health endpoint (no auth required)
+@app.get("/api/health")
+def health() -> Response:
+    return Response(content="ok\n", media_type="text/plain")
