@@ -5,14 +5,14 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from xml.etree import ElementTree as ET
 from ..models.users import User
-from ..crud.auth import get_current_user_from_token
+from ..crud.auth import get_current_user_from_token, require_role, RoleEnum
 from ..db import get_db
 from ..crud import subUseCases as crud
 from ..schemas.subUseCases import *
 from ..schemas.logs import VersionInfo
 from ..config import IMAGE_DIR
 
-router = APIRouter(prefix="/subusecases", tags=["Sub Use Cases"])
+router = APIRouter(prefix="/subusecases", tags=["Sub Use Cases"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # -------LIST--------
 @router.get("/", response_model=list[SubUseCase])

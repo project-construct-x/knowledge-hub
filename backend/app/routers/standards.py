@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..crud import standards as crud
 from ..models.users import User
-from ..crud.auth import get_current_user_from_token
+from ..crud.auth import get_current_user_from_token, require_role, RoleEnum
 from ..schemas.standards import *
 from ..schemas.logs import VersionInfo
 
-router = APIRouter(prefix="/standards", tags=["Standards"])
+router = APIRouter(prefix="/standards", tags=["Standards"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # ---------LIST--------
 @router.get("/", response_model=list[Standard])

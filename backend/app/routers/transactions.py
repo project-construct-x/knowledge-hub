@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..crud.auth import get_current_user_from_token
+from ..crud.auth import get_current_user_from_token, require_role, RoleEnum
 from ..db import get_db
 from ..crud import transactions as crud
 from ..models.users import User
 from ..schemas.transactions import *
 from ..schemas.logs import VersionInfo
 
-router = APIRouter(prefix="/transactions", tags=["Transactions"])
+router = APIRouter(prefix="/transactions", tags=["Transactions"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # --------LIST--------
 @router.get("/", response_model=list[Transaction])

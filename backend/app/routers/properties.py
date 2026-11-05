@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..schemas.logs import VersionInfo
 from ..models.users import User
-from ..crud.auth import get_current_user_from_token
+from ..crud.auth import get_current_user_from_token, require_role, RoleEnum
 from ..db import get_db
 from ..crud import properties as crud
 from ..schemas.properties import *
 from typing import List
 from uuid import UUID
 
-router = APIRouter(prefix="/properties", tags=["Properties"])
+router = APIRouter(prefix="/properties", tags=["Properties"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # --------LIST--------
 @router.get("/", response_model=List[PropertyResponse])
