@@ -31,6 +31,7 @@ function resolveValue(value: unknown): string | number {
   if (value === null || value === undefined) return "";
   if (typeof value === "number") return value;
   if (typeof value === "string") return value;
+  if (Array.isArray(value)) return value.join(' ');
   if (typeof value === "object") {
     const obj = value as Record<string, unknown>;
 
