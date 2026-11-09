@@ -65,6 +65,27 @@ const Login: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="login-footer">
+          <a
+            href="https://www.construct-x.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: '12px', color: 'var(--text-muted)' }}
+          >
+            Teil des Forschungsprojektes Construct-X
+          </a>
+          <a
+            href="https://dpbb.uni-wuppertal.de/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sidebar-footer"
+          >
+            <img src="/logo_dpbb.png" alt="Logo" className="sidebar-logo" />
+            <span>entwickelt vom DPBB an der Uni Wuppertal</span>
+          </a>
+        </div>
       </div>
     </div>
   );
