@@ -47,7 +47,7 @@ const Login: React.FC = () => {
             Willkommen zurück
           </h1>
           <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-            Melden Sie sich an, um fortzufahren
+            Melden Sie sich an, um fortzufahren.
           </p>
         </div>
 
@@ -61,7 +61,7 @@ const Login: React.FC = () => {
               style={{ width: '100%' }}
             >
               <Lock size={15} />
-              Mit Keycloak anmelden
+              Über Construct-X Portal anmelden
             </button>
           </div>
         </div>
