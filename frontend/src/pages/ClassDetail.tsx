@@ -133,6 +133,16 @@ export default function ClassDetail() {
           </div>
           <div className="page-header-sub">Klasse</div>
         </div>
+        {/* Download AASX button */}
+        {uuid !== "new" && (
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ marginLeft: "auto" }}
+          >
+            AASX herunterladen
+          </button>
+        )}
       </div>
 
       <VersionConflictAlert
