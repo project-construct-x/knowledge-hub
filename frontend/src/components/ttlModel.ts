@@ -36,26 +36,12 @@ const idOf = (t: Term) => (t.termType === "BlankNode" ? `_:${t.value}` : t.value
 const isResource = (t: Term) => t.termType === "NamedNode" || t.termType === "BlankNode";
 
 export function parseTurtle(text: string): TtlModel {
-    return new Promise((resolve, reject) => {
-        const quads: Quad[] = [];
-
-        new Parser({ format: "text/turtle" }).parse(text, (err, quad, pfx) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            if (quad) {
-                quads.push(quad);
-                return;
-            }
-            // Ende der Eingabe: quad ist null, pfx enthält die Präfixe
-            try {
-                resolve(buildModel(quads, (pfx ?? {}) as Record<string, unknown>));
-            } catch (e) {
-                reject(e);
-            }
-        });
+    const prefixes: Record<string, unknown> = {};
+    const parser = new Parser({ format: "text/turtle" });
+    const quads: Quad[] = parser.parse(text, null, (prefix: string, node) => {
+        prefixes[prefix] = node.value;
     });
+    return buildModel(quads, prefixes);
 }
 
 
