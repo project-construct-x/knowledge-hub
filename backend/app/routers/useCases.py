@@ -8,7 +8,7 @@ from ..schemas.useCases import *
 from ..schemas.logs import *
 from ..crud.auth import require_role, RoleEnum
 
-router = APIRouter(prefix="/usecases", tags=["Use Cases"])
+router = APIRouter(prefix="/usecases", tags=["Use Cases"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # ---------LIST--------
 @router.get("/", response_model=list[UseCase])

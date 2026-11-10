@@ -117,6 +117,10 @@ function AppContent() {
         <div className="nav-section">Verwaltung</div>
         <NavItem to="/users" label="Benutzer" icon="users" />
         <NavItem to="/api-keys" label="API-Keys" icon="api-keys" />
+        <a href="https://dpbb.uni-wuppertal.de/" target="_blank" rel="noopener noreferrer" className="sidebar-footer">
+          <img src="/logo_dpbb.png" alt="Logo" className="sidebar-logo" />
+          <span>entwickelt vom DPBB an der Uni Wuppertal</span>
+        </a>
       </nav>
 
       {/* Main */}

@@ -49,6 +49,9 @@ frontend/.vite/
 # PyCharm
 frontend/.idea/
 
+# Zed
+.zed/settings.json
+
 # ============================================
 # Docker
 # ============================================
@@ -87,3 +90,14 @@ docker-compose.prod.yml
 
 # Environment variables
 !.env.example
+<<<<<<< Updated upstream
+=======
+*.env
+
+# Environment-specific
+.env.local
+.env.development
+.env.production
+.env.prod
+.env.dev
+>>>>>>> Stashed changes

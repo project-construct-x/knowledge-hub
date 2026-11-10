@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from ..db import get_db
 from ..crud import propertyGroups as propertyGroups_crud
+from ..crud.auth import require_role, RoleEnum
 from ..crud import properties as properties_crud
 from ..models.models import PropertyGroup, Property, PropertyGroupCategory
 
-router = APIRouter(prefix="/ontology", tags=["ontology"])
+router = APIRouter(prefix="/ontology", tags=["ontology"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 @router.get("/graph")
 def get_ontology_graph(db: Session = Depends(get_db)):

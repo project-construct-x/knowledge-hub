@@ -9,7 +9,7 @@ from ..schemas.properties import *
 from typing import List
 from uuid import UUID
 
-router = APIRouter(prefix="/properties", tags=["Properties"])
+router = APIRouter(prefix="/properties", tags=["Properties"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # --------LIST--------
 @router.get("/", response_model=List[PropertyResponse])
