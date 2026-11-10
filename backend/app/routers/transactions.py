@@ -7,7 +7,7 @@ from ..models.users import User
 from ..schemas.transactions import *
 from ..schemas.logs import VersionInfo
 
-router = APIRouter(prefix="/transactions", tags=["Transactions"])
+router = APIRouter(prefix="/transactions", tags=["Transactions"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # --------LIST--------
 @router.get("/", response_model=list[Transaction])

@@ -7,7 +7,7 @@ from ..db import get_db
 from ..schemas.roles import *
 from ..schemas.logs import VersionInfo
 
-router = APIRouter(prefix="/roles", tags=["Roles"])
+router = APIRouter(prefix="/roles", tags=["Roles"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # ---------LIST--------
 @router.get("/", response_model=list[Role])

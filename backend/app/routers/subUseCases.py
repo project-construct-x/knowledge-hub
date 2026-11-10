@@ -12,7 +12,7 @@ from ..schemas.subUseCases import *
 from ..schemas.logs import VersionInfo
 from ..config import IMAGE_DIR
 
-router = APIRouter(prefix="/subusecases", tags=["Sub Use Cases"])
+router = APIRouter(prefix="/subusecases", tags=["Sub Use Cases"], dependencies=[Depends(require_role(RoleEnum.READ))])
 
 # -------LIST--------
 @router.get("/", response_model=list[SubUseCase])
