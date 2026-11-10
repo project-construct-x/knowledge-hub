@@ -109,6 +109,7 @@ function AppContent() {
         <NavItem to="/propertygroups" label="Merkmalsgruppen" icon="propertygroups" />
         <NavItem to="/properties" label="Merkmale" icon="properties" />
         <NavItem to="/ontology" label="Ontologie" icon="ontology" />
+        <NavItem to="/turtle-viewer" label="Turtle Viewer" icon="ontology" />
         <NavItem to="/standards" label="Standards" icon="standards" />
 
         <div className="nav-separator" />

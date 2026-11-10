@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../auth/useAuth.ts";
 import { useParams, useNavigate } from "react-router-dom";
 import {api, ApiError} from "../api/api.ts";
 import type {PropertyGroup, Property, VersionConflictDetail} from "../types.ts";
@@ -23,6 +24,7 @@ const emptyClass: Partial<PropertyGroup> = {
 };
 
 export default function ClassDetail() {
+  const { hasWriteAccess } = useAuth();
   const { uuid } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState<Partial<PropertyGroup>>(emptyClass);
@@ -131,6 +133,16 @@ export default function ClassDetail() {
           </div>
           <div className="page-header-sub">Klasse</div>
         </div>
+        {/* Download AASX button */}
+        {uuid !== "new" && (
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ marginLeft: "auto" }}
+          >
+            AASX herunterladen
+          </button>
+        )}
       </div>
 
       <VersionConflictAlert
@@ -380,10 +392,11 @@ export default function ClassDetail() {
             <div className="form-actions">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !hasWriteAccess}
+                title={!hasWriteAccess ? "Nur Schreibrechte können speichern" : undefined}
                 className="btn btn-primary"
               >
-                {loading ? "Speichern..." : "Speichern"}
+                {loading ? "Speichern..." : (hasWriteAccess ? "Speichern" : "Speichern (keine Schreibrechte)") }
               </button>
               <button
                 type="button"
