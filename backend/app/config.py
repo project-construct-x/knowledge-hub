@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     keycloak_realm: str
     keycloak_client_id: str
     keycloak_client_secret: str
+    fuseki_url: str
+    fuseki_dataset: str
 
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",

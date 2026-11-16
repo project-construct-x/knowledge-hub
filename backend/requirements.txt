@@ -1,6 +1,7 @@
 alembic
 authlib
 httpx2
+rdflib
 itsdangerous
 fastapi
 uvicorn[standard]

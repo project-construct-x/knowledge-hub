@@ -1,19 +1,58 @@
-from fastapi import FastAPI, Request, APIRouter, Depends
-from fastapi.responses import JSONResponse, Response
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import APIRouter, Depends, FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
+from starlette.concurrency import run_in_threadpool
 from starlette.middleware.sessions import SessionMiddleware
-from .routers import auth, useCases, subUseCases, roles, transactions, properties, propertyGroups, users, ontology, standards
-from .crud.auth import get_current_user_from_token
+
 from .config import IMAGE_DIR, get_settings
+from .crud.auth import get_current_user_from_token
+from .db import SessionLocal
 from .exceptions import VersionConflictError
-import logging
+from .graph import FusekiClient, get_fuseki, init_fuseki, shutdown_fuseki
+from .routers import (
+    auth,
+    ontology,
+    properties,
+    propertyGroups,
+    roles,
+    standards,
+    subUseCases,
+    transactions,
+    useCases,
+    users,
+)
 
 settings = get_settings()
 
 logger = logging.getLogger("uvicorn.error")
+
+def _check_sql() -> None:
+    with SessionLocal() as session:
+        session.execute(text("SELECT 1"))
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Erzeugt und schließt den Fuseki-Client (ein Client pro App)."""
+    if not settings.fuseki_url:
+        logger.warning("FUSEKI_URL nicht gesetzt — Graph-Layer deaktiviert.")
+        yield
+        return
+    client = FusekiClient(base_url=settings.fuseki_url, dataset=settings.fuseki_dataset)
+    await init_fuseki(client)
+    logger.info("Fuseki-Client initialisiert: %s (Dataset: %s)", settings.fuseki_url, settings.fuseki_dataset)
+    try:
+        yield
+    finally:
+        await shutdown_fuseki()
+
 
 app = FastAPI(
     title="Construct-X Knowledge Hub API",
@@ -27,7 +66,9 @@ app = FastAPI(
         "usePkceWithAuthorizationCodeGrant": True,
         "scopes": "openid profile email",
     },
+    lifespan=lifespan,
 )
+
 
 @app.exception_handler(VersionConflictError)
 async def version_conflict_handler(request: Request, exc: VersionConflictError):
@@ -41,6 +82,7 @@ async def version_conflict_handler(request: Request, exc: VersionConflictError):
             "updated_at": exc.updated_at.isoformat() if exc.updated_at else None,
         },
     )
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -64,6 +106,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": jsonable_encoder(errors)},
     )
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
@@ -78,8 +121,6 @@ app.add_middleware(
 )
 
 api = APIRouter(prefix="/api", dependencies=[Depends(get_current_user_from_token)])
-
-
 
 app.mount("/static/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
@@ -100,5 +141,24 @@ app.include_router(api)
 
 # Public health endpoint (no auth required)
 @app.get("/api/health")
-def health() -> Response:
-    return Response(content="ok\n", media_type="text/plain")
+@app.get("/api/health/ready")
+async def ready() -> Response:
+    problems: list[str] = []
+    try:
+        await run_in_threadpool(_check_sql)
+    except Exception:
+        logger.exception("Health: SQL nicht erreichbar")
+        problems.append("sql")
+
+    if settings.fuseki_url:
+        try:
+            if not await get_fuseki().ping():
+                problems.append("fuseki")
+        except Exception:
+            logger.exception("Health: Fuseki nicht erreichbar")
+            problems.append("fuseki")
+
+    if problems:
+        return Response(f"unavailable: {','.join(problems)}\n",
+                        status_code=503, media_type="text/plain")
+    return Response("ok\n", media_type="text/plain")

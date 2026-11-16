@@ -1,7 +1,25 @@
 services:
+  fuseki:
+    build:
+      context: ./fuseki
+      args:
+        JENA_VERSION: "6.2.0"
+    # --tdb2: persistenter TDB2-Store, --update: SPARQL-Update erlaubt
+    # --loc databases/usecases: relativer Pfad → /fuseki/databases/usecases (Volume-Mount)
+    command: ["--tdb2", "--update", "--loc", "databases/knowledge", "/knowledge"]
+    environment:
+      # Der Apache-Dockerfile nutzt JAVA_OPTIONS (nicht JVM_ARGS)
+      JAVA_OPTIONS: "-Xmx2048m -Xms512m"
+    volumes:
+      - fuseki_data:/fuseki/databases
+    # in Produktion KEIN ports-Mapping; nur im Dev-Setup für die Web-UI:
+    ports:
+      - "3030:3030"
+    restart: unless-stopped
+
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    command: start-dev
+    command: start-dev --import-realm
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -37,9 +55,13 @@ services:
       - "8001:8001"
     environment:
       - APP_ENV=development
+      # Fuseki: nur intern erreichbar, ausschließlich FastAPI spricht mit ihm
+      - FUSEKI_URL=http://fuseki:3030
+      - FUSEKI_DATASET=knowledge
     depends_on:
       - db
       - keycloak
+      - fuseki
     volumes:
       - ./backend:/app
       - static_images_volume_dev:/app/static/images
@@ -65,3 +87,5 @@ volumes:
   static_images_volume_dev:
     name: knowledge-hub_static_images_dev_user1
   keycloak_data:
+  fuseki_data:
+    name: knowledge-hub_fuseki_data_dev
