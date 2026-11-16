@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     keycloak_realm: str
     keycloak_client_id: str
     keycloak_client_secret: str
+    # Apache Jena Fuseki (Graph-Layer für Fachdaten)
+    # Leerer Default = Graph-Layer deaktiviert (z. B. in K8s-Deployment ohne Fuseki)
+    fuseki_url: str = ""
+    fuseki_dataset: str = "knowledge"
 
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",
