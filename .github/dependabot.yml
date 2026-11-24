@@ -1,0 +1,94 @@
+# Dependabot-Konfiguration für knowledge-hub
+#
+# Strategie:
+# - Alle Ökosysteme prüfen einmal pro Woche (Montag) nach Updates.
+# - Minor-/Patch-Updates werden pro Ökosystem in EINEN gebündelten PR
+#   gesteckt (niedriges Risiko, schnelles Review möglich).
+# - Major-Updates kommen separat, damit sie gezielt geprüft werden.
+# - Merging erfolgt manuell bzw. per Auto-Merge – Dependabot öffnet
+#   nur PRs, es merged nichts selbst.
+
+version: 2
+updates:
+  # Frontend (npm)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      frontend-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      frontend-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+    open-pull-requests-limit: 10
+
+  # Backend (pip)
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      backend-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      backend-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+    open-pull-requests-limit: 10
+
+  # Docker-Images: backend/Dockerfile (python base image)
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      backend-docker:
+        patterns:
+          - "*"
+
+  # Docker-Images: frontend/Dockerfile + Dockerfile.prod (node, nginx)
+  - package-ecosystem: "docker"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      frontend-docker:
+        patterns:
+          - "*"
+
+  # Docker-Compose-Dateien im Repo-Root (keycloak, postgres – nur Dev)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      compose-docker:
+        patterns:
+          - "*"
